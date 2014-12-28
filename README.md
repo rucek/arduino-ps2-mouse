@@ -50,10 +50,11 @@ See http://computer-engineering.org/ps2mouse for details.
 	mouse.initialize();
 	```
 
-6. In the `loop()` use `PS2Mouse::readData()` to retrieve current position and wheel data:
+6. In the `loop()` use `PS2Mouse::readData()` to retrieve current position and wheel data, with a small delay between subsequent reads:
 
 	```c
 	MouseData data = mouse.readData();
+	delay(20);
 	```
 
 	See [example.ino](example.ino) for a complete example.
