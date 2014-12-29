@@ -2,8 +2,17 @@
 #include "Arduino.h"
 
 #define INTELLI_MOUSE 3
-#define SCALING_1_TO_1 0xe6
+#define SCALING_1_TO_1 0xE6
 #define RESOLUTION_8_COUNTS_PER_MM 3
+
+enum Commands {
+    SET_RESOLUTION = 0xE8,
+    REQUEST_DATA = 0xEB,
+    SET_REMOTE_MODE = 0xF0,
+    GET_DEVICE_ID = 0xF2,
+    SET_SAMPLE_RATE = 0xF3,
+    RESET = 0xFF,
+};
 
 PS2Mouse::PS2Mouse(int clockPin, int dataPin) {
     _clockPin = clockPin;
@@ -35,7 +44,7 @@ void PS2Mouse::initialize() {
 
 void PS2Mouse::writeByte(char data) {
     int parityBit = 1;
-    
+
     high(_dataPin);
     high(_clockPin);
     delayMicroseconds(300);
@@ -120,7 +129,7 @@ int PS2Mouse::readBit() {
 }
 
 void PS2Mouse::setSampleRate(int rate) {
-    writeAndReadAck(0xf3);
+    writeAndReadAck(SET_SAMPLE_RATE);
     writeAndReadAck(rate);
 }
 
@@ -130,7 +139,7 @@ void PS2Mouse::writeAndReadAck(int data) {
 }
 
 void PS2Mouse::reset() {
-    writeAndReadAck(0xff);
+    writeAndReadAck(RESET);
     readByte();  // self-test status
     readByte();  // mouse ID
 }
@@ -146,7 +155,7 @@ void PS2Mouse::checkIntelliMouseExtensions() {
 }
 
 char PS2Mouse::getDeviceId() {
-    writeAndReadAck(0xf2);
+    writeAndReadAck(GET_DEVICE_ID);
     return readByte();
 }
 
@@ -155,11 +164,11 @@ void PS2Mouse::setScaling(int scaling) {
 }
 
 void PS2Mouse::setRemoteMode() {
-    writeAndReadAck(0xf0);
+    writeAndReadAck(SET_REMOTE_MODE);
 }
 
 void PS2Mouse::setResolution(int resolution) {
-    writeAndReadAck(0xe8);
+    writeAndReadAck(SET_RESOLUTION);
     writeAndReadAck(resolution);
 }
 
@@ -184,5 +193,5 @@ MouseData PS2Mouse::readData() {
 };
 
 void PS2Mouse::requestData() {
-    writeAndReadAck(0xeb);
+    writeAndReadAck(REQUEST_DATA);
 }
